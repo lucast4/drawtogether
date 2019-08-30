@@ -407,7 +407,8 @@
 				// Save the stroke.
 				var stroke = path.attr();
 				stroke.type = path.type;
-				
+				stroke.times = path.times;
+
 				_strokes.push(stroke);
 				
 				_action_history.add({
@@ -580,6 +581,7 @@
 		var _drawing = false;
 		var _c = null;
 		var _points = [];
+		var _times = [];
 
 		self.color = function(value) {
 			if (value === undefined){
@@ -630,8 +632,9 @@
 			
 			var x = e.pageX - _offset.left,
 				y = e.pageY - _offset.top;
+				t = Date.now()
 			_points.push([x, y]);
-
+			_times.push(t)
 			_c = sketchpad.paper().path();
 
 			_c.attr({ 
@@ -650,6 +653,7 @@
 				if (_points.length <= 1) {
 					_c.remove();
 				} else {
+					_c.times = _times;
 					path = _c;
 				}
 			}
@@ -657,6 +661,7 @@
 			_drawing = false;
 			_c = null;
 			_points = [];
+			_times = [];
 			
 			return path;
 		};
@@ -664,8 +669,10 @@
 		self.move = function(e, sketchpad) {
 			if (_drawing == true) {
 				var x = e.pageX - _offset.left,
-					y = e.pageY - _offset.top;			
+					y = e.pageY - _offset.top;
+					t = Date.now()			
 				_points.push([x, y]);
+				_times.push(t)
 				_c.attr({ path: points_to_svg() });
 			}
 		};
